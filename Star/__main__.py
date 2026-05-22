@@ -29,7 +29,7 @@ async def start_bot():
     for all_module in ALL_MODULES:
         importlib.import_module("Star.modules." + all_module)
 
-    LOGGER.info(f"@{starX.username} Started.")
+    LOGGER.info(f"@{StarX.username} Started.")
     await idle()
 
 # 3. Start both Flask and Bot
