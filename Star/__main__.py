@@ -9,8 +9,8 @@ from Star import LOGGER, StarX
 from Star.modules import ALL_MODULES
 
 
-# Flask app (Render keep alive)
 app = Flask(__name__)
+
 
 @app.route("/")
 def home():
@@ -18,28 +18,33 @@ def home():
 
 
 def run_flask():
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 10000))
     app.run(
         host="0.0.0.0",
         port=port,
         debug=False,
-        use_reloader=False
+        use_reloader=False,
     )
 
 
 async def start_bot():
     try:
+        LOGGER.info("===== BOT STARTING =====")
+
         await StarX.start()
 
+        LOGGER.info(f"Logged in as @{StarX.username}")
+
         for module in ALL_MODULES:
+            LOGGER.info(f"Loading module: {module}")
             importlib.import_module(f"Star.modules.{module}")
 
-        LOGGER.info(f"@{StarX.username} Started.")
+        LOGGER.info("===== BOT ONLINE =====")
 
         await idle()
 
-    except Exception as e:
-        LOGGER.error(f"Startup Error: {e}")
+    except Exception:
+        LOGGER.exception("BOT FAILED")
         raise
 
     finally:
@@ -50,12 +55,7 @@ async def start_bot():
 
 
 def main():
-    flask_thread = Thread(
-        target=run_flask,
-        daemon=True
-    )
-    flask_thread.start()
-
+    Thread(target=run_flask, daemon=True).start()
     asyncio.run(start_bot())
 
 
