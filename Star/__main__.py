@@ -2,13 +2,16 @@ import os
 import asyncio
 import importlib
 from threading import Thread
+
 from flask import Flask
 from pyrogram import idle
-
-from Star import LOGGER, StarX
-from Star.modules import ALL_MODULES
+from pyrogram.errors import FloodWait
 
 
+print("MAIN FILE STARTED")
+
+
+# Flask
 app = Flask(__name__)
 
 
@@ -19,6 +22,9 @@ def home():
 
 def run_flask():
     port = int(os.environ.get("PORT", 10000))
+
+    print("FLASK STARTING")
+
     app.run(
         host="0.0.0.0",
         port=port,
@@ -28,34 +34,57 @@ def run_flask():
 
 
 async def start_bot():
-    try:
-        LOGGER.info("===== BOT STARTING =====")
+    print("BOT FUNCTION ENTERED")
 
-        await StarX.start()
+    from Star import LOGGER, StarX
+    from Star.modules import ALL_MODULES
 
-        LOGGER.info(f"Logged in as @{StarX.username}")
+    print("IMPORT DONE")
 
-        for module in ALL_MODULES:
-            LOGGER.info(f"Loading module: {module}")
-            importlib.import_module(f"Star.modules.{module}")
-
-        LOGGER.info("===== BOT ONLINE =====")
-
-        await idle()
-
-    except Exception:
-        LOGGER.exception("BOT FAILED")
-        raise
-
-    finally:
+    while True:
         try:
-            await StarX.stop()
-        except:
-            pass
+            print("LOGIN START")
+
+            await StarX.start()
+
+            print("BOT LOGIN SUCCESS")
+
+            for module in ALL_MODULES:
+                print(f"LOADING {module}")
+                importlib.import_module(
+                    f"Star.modules.{module}"
+                )
+
+            print("MODULES LOADED")
+            print("BOT ONLINE")
+
+            await idle()
+
+        except FloodWait as e:
+            print(f"FloodWait: sleeping {e.value}s")
+
+            await asyncio.sleep(
+                int(e.value)
+            )
+
+        except Exception as e:
+            print("BOT FAILED")
+            print(e)
+            raise
+
+        finally:
+            try:
+                await StarX.stop()
+            except:
+                pass
 
 
 def main():
-    Thread(target=run_flask, daemon=True).start()
+    Thread(
+        target=run_flask,
+        daemon=True
+    ).start()
+
     asyncio.run(start_bot())
 
 
