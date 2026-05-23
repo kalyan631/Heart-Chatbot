@@ -1,15 +1,14 @@
 import asyncio
 
-# FIX event loop before importing Abg
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
+# Fix event loop before imports
+asyncio.set_event_loop(asyncio.new_event_loop())
 
 import logging
 import time
 
 from Abg import patch
 
-from motor.motor_asyncio import AsyncIOMotorClient as MongoCli
+from motor.motor_asyncio import AsyncIOMotorClient
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 
@@ -21,7 +20,7 @@ logging.basicConfig(
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
         logging.FileHandler("log.txt"),
-        logging.StreamHandler()
+        logging.StreamHandler(),
     ],
     level=logging.INFO,
 )
@@ -29,24 +28,24 @@ logging.basicConfig(
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 
 LOGGER = logging.getLogger(__name__)
+
 boot = time.time()
 
-mongo = MongoCli(config.MONGO_URL)
+mongo = AsyncIOMotorClient(config.MONGO_URL)
 db = mongo.Anonymous
 
 OWNER = config.OWNER_ID
 
 
-class StarX(Client):
+class StarBot(Client):
     def __init__(self):
         super().__init__(
             name="StarX",
             api_id=config.API_ID,
             api_hash=config.API_HASH,
             bot_token=config.BOT_TOKEN,
-            lang_code="en",
-            in_memory=True,
             parse_mode=ParseMode.DEFAULT,
+            in_memory=True,
         )
 
     async def start(self):
@@ -55,7 +54,7 @@ class StarX(Client):
         me = await self.get_me()
 
         self.id = me.id
-        self.name = f"{me.first_name} {me.last_name or ''}".strip()
+        self.name = me.first_name
         self.username = me.username
         self.mention = me.mention
 
@@ -63,4 +62,4 @@ class StarX(Client):
         await super().stop()
 
 
-StarX = StarX()
+StarX = StarBot()
