@@ -1,5 +1,3 @@
-
-
 import random
 from datetime import datetime
 
@@ -28,10 +26,12 @@ async def ping(_, message: Message):
         pass
 
     ms = (datetime.now() - start).microseconds / 1000
+
     await loda.edit_text(
-        text=f"нey вαву!!\n{StarX.name} ιѕ alιve 🥀 αnd worĸιng ғιne wιтн a pιng oғ\n➥ `{ms}` ms\n\n<b>|| мαdє ωιтн ❣️ ву [🖤ः⎯꯭̽࠾࡙ࠬ𝆬иσв࡙ιтα𝆺𝅥┽•࡙ꭙ𝆬𝆬𝆬𝆬𝂇࠾ࠬ❤](https://t.me/{@badboy_cyberblsck}) ||</b>",
+        text=f"нey вαву!!\n{StarX.name} ιѕ alιve 🥀 αnd worĸιng ғιne wιтн a pιng oғ\n➥ `{ms}` ms\n\n<b>|| мαdє ωιтн ❣️ ву [🖤ः⎯꯭̽࠾࡙ࠬ𝆬иσв࡙ιтα𝆺𝅥┽•࡙ꭙ𝆬𝆬𝆬𝆬𝂇࠾ࠬ❤](https://t.me/badboy_cyberblsck) ||</b>",
         reply_markup=InlineKeyboardMarkup(PNG_BTN),
     )
+
     if message.chat.type == ChatType.PRIVATE:
         await add_served_user(message.from_user.id)
     else:
